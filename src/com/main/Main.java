@@ -11,6 +11,8 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
+
+
         BibliothequeDAO bibliothequeDAO = new BibliothequeDAO();
         UserDAO userDAO = new UserDAO();
 
@@ -38,19 +40,25 @@ public class Main {
     }
 
     private static void gestionUtilisateurs(UserDAO userDAO, Scanner scanner) {
-
-        int choix;
+        // On initialise la variable choix à 0 avant la boucle
+        int choix = 0;
+       // int choix;
         do {
-            System.out.println("\n GESTION DES UTILISATEURS");
+            System.out.println("\n👤 GESTION DES UTILISATEURS 👤");
             System.out.println("1. Ajouter un utilisateur");
             System.out.println("2. Modifier un utilisateur");
             System.out.println("3. Supprimer un utilisateur");
             System.out.println("4. Afficher tous les utilisateurs");
+            System.out.println("0. Quitter");
             System.out.print("Votre choix : ");
-            choix = scanner.nextInt();
 
-            // Évite les erreurs de lecture
-            scanner.nextLine();
+            // Utiliser Integer.parseInt(scanner.nextLine()) au lieu de scanner.nextInt()
+            try {
+                choix = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Erreur : veuillez entrer un nombre !");
+                continue; // Redemander un choix valide
+            }
 
             switch (choix) {
                 case 1 -> {
@@ -64,10 +72,29 @@ public class Main {
                     String password = scanner.nextLine();
                     userDAO.addUser(new User(nom, prenom, email, password));
                 }
-                case 2 -> { /* Code pour modifier */ }
-                case 3 -> { /* Code pour supprimer */ }
-                case 4 -> userDAO.getAllUsers().forEach(System.out::println);
-                default -> System.out.println("Option invalide !");
+                case 2 -> {
+                    System.out.print("ID de l'utilisateur à modifier : ");
+                    // Lire correctement l'ID
+                    int id = Integer.parseInt(scanner.nextLine());
+                    System.out.print("Nouveau nom : ");
+                    String nom = scanner.nextLine();
+                    System.out.print("Nouveau prénom : ");
+                    String prenom = scanner.nextLine();
+                    System.out.print("Nouvel email : ");
+                    String email = scanner.nextLine();
+                    userDAO.updateUser(id, nom, prenom, email);
+                }
+                case 3 -> {
+                    System.out.print("ID de l'utilisateur à supprimer : ");
+                    int id = Integer.parseInt(scanner.nextLine());
+                    userDAO.deleteUser(id);
+                }
+                case 4 -> {
+                    System.out.println("\n Liste des utilisateurs :");
+                    userDAO.getAllUsers().forEach(System.out::println);
+                }
+                case 0 -> System.out.println("Au revoir !");
+                default -> System.out.println("Choix invalide, veuillez réessayer.");
             }
         } while (choix != 0);
     }
